@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Almacenamiento PL300</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f7f9fc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .test-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .results {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e1e8ed;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-item.success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .result-item.error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .result-item.warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+
+        .result-item.info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .message {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e1e8ed;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e1e8ed;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test de Almacenamiento PL300</h1>
+            <p>Suite de pruebas para localStorage y rendimiento</p>
+        </div>
+
+        <div class="content">
+            <!-- Test 1: Integridad de Datos -->
+            <div class="test-section">
+                <h2>📦 Test de Integridad de Datos</h2>
+                <div class="test-controls">
+                    <button class="btn-primary" onclick="testDataIntegrity()">Verificar Integridad</button>
+                    <button class="btn-success" onclick="testLargeDataset()">Test Datos Grandes</button>
+                    <button class="btn-warning" onclick="testCorruptedData()">Test Datos Corruptos</button>
+                </div>
+                <div class="results" id="integrity-results"></div>
+            </div>
+
+            <!-- Test 2: Rendimiento -->
+            <div class="test-section">
+                <h2>⚡ Test de Rendimiento</h2>
+                <div class="test-controls">
+                    <button class="btn-primary" onclick="testWritePerformance()">Test Escritura</button>
+                    <button class="btn-success" onclick="testReadPerformance()">Test Lectura</button>
+                    <button class="btn-info" onclick="testJSONPerformance()">Test JSON Parse/Stringify</button>
+                </div>
+                <div class="results" id="performance-results"></div>
+            </div>
+
+            <!-- Test 3: Capacidad -->
+            <div class="test-section">
+                <h2>💾 Test de Capacidad</h2>
+                <div class="test-controls">
+                    <button class="btn-primary" onclick="testStorageCapacity()">Medir Capacidad</button>
+                    <button class="btn-warning" onclick="testStorageLimit()">Test Límite</button>
+                    <button class="btn-danger" onclick="clearAllStorage()">Limpiar Todo</button>
+                </div>
+                <div class="results" id="capacity-results"></div>
+            </div>
+
+            <!-- Test 4: Deduplicación y Auto-save -->
+            <div class="test-section">
+                <h2>🔄 Test de Auto-save y Deduplicación</h2>
+                <div class="test-controls">
+                    <button class="btn-primary" onclick="testAutosaveThrottle()">Test Throttling</button>
+                    <button class="btn-success" onclick="testDeduplication()">Test Deduplicación</button>
+                    <button class="btn-info" onclick="testConcurrentWrites()">Test Escrituras Concurrentes</button>
+                </div>
+                <div class="results" id="autosave-results"></div>
+            </div>
+
+            <!-- Test 5: IndexedDB -->
+            <div class="test-section">
+                <h2>🗄️ Test de IndexedDB</h2>
+                <div class="test-controls">
+                    <button class="btn-primary" onclick="testIndexedDBAvailability()">Verificar Disponibilidad</button>
+                    <button class="btn-success" onclick="testIndexedDBOperations()">Test Operaciones</button>
+                    <button class="btn-warning" onclick="testIndexedDBMigration()">Test Migración</button>
+                </div>
+                <div class="results" id="indexeddb-results"></div>
+            </div>
+
+            <!-- Estadísticas Globales -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="storage-used">0 KB</div>
+                    <div class="stat-label">Almacenamiento Usado</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="items-count">0</div>
+                    <div class="stat-label">Items en Storage</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="tests-run">0</div>
+                    <div class="stat-label">Tests Ejecutados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="errors-found">0</div>
+                    <div class="stat-label">Errores Encontrados</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estadísticas globales
+        let testsRun = 0;
+        let errorsFound = 0;
+
+        // Utilidades
+        function addResult(sectionId, message, type = 'info', icon = 'ℹ️') {
+            const resultsDiv = document.getElementById(sectionId);
+            const resultItem = document.createElement('div');
+            resultItem.className = `result-item ${type}`;
+            resultItem.innerHTML = `
+                <span class="icon">${icon}</span>
+                <span class="message">${message}</span>
+            `;
+            resultsDiv.insertBefore(resultItem, resultsDiv.firstChild);
+
+            testsRun++;
+            if (type === 'error') errorsFound++;
+            updateStats();
+        }
+
+        function clearResults(sectionId) {
+            document.getElementById(sectionId).innerHTML = '';
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        function getStorageSize() {
+            let total = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    total += localStorage[key].length + key.length;
+                }
+            }
+            return total * 2; // UTF-16 characters
+        }
+
+        function updateStats() {
+            document.getElementById('storage-used').textContent = formatBytes(getStorageSize());
+            document.getElementById('items-count').textContent = localStorage.length;
+            document.getElementById('tests-run').textContent = testsRun;
+            document.getElementById('errors-found').textContent = errorsFound;
+        }
+
+        // Test 1: Integridad de Datos
+        function testDataIntegrity() {
+            clearResults('integrity-results');
+            addResult('integrity-results', 'Iniciando test de integridad...', 'info', '🚀');
+
+            const testData = {
+                version: '1.0.0',
+                user: { id: 'test_user_123', name: 'Test User' },
+                progress: {
+                    totalPoints: 1500,
+                    answeredQuestions: Array.from({length: 50}, (_, i) => `q_${i}`),
+                    achievements: ['first_quiz', 'explorer'],
+                    domainStats: {
+                        'preparar-datos': { correct: 10, total: 15 },
+                        'modelar-datos': { correct: 8, total: 12 }
+                    }
+                }
+            };
+
+            try {
+                // Test 1: Guardar y recuperar
+                const key = 'test_progress_integrity';
+                localStorage.setItem(key, JSON.stringify(testData));
+                const retrieved = JSON.parse(localStorage.getItem(key));
+
+                if (JSON.stringify(testData) === JSON.stringify(retrieved)) {
+                    addResult('integrity-results', 'Datos guardados y recuperados correctamente', 'success', '✅');
+                } else {
+                    addResult('integrity-results', 'Los datos recuperados no coinciden con los originales', 'error', '❌');
+                }
+
+                // Test 2: Verificar estructura
+                const hasRequiredFields = retrieved.version && retrieved.user && retrieved.progress;
+                if (hasRequiredFields) {
+                    addResult('integrity-results', 'Estructura de datos válida', 'success', '✅');
+                } else {
+                    addResult('integrity-results', 'Estructura de datos incompleta', 'error', '❌');
+                }
+
+                // Test 3: Verificar tipos de datos
+                const typesValid =
+                    typeof retrieved.progress.totalPoints === 'number' &&
+                    Array.isArray(retrieved.progress.answeredQuestions) &&
+                    typeof retrieved.progress.domainStats === 'object';
+
+                if (typesValid) {
+                    addResult('integrity-results', 'Tipos de datos correctos', 'success', '✅');
+                } else {
+                    addResult('integrity-results', 'Tipos de datos incorrectos', 'error', '❌');
+                }
+
+                localStorage.removeItem(key);
+                addResult('integrity-results', 'Test de integridad completado', 'success', '🎉');
+
+            } catch (error) {
+                addResult('integrity-results', `Error: ${error.message}`, 'error', '❌');
+            }
+        }
+
+        function testLargeDataset() {
+            clearResults('integrity-results');
+            addResult('integrity-results', 'Testing dataset grande...', 'info', '📊');
+
+            try {
+                const largeData = {
+                    answeredQuestions: Array.from({length: 1000}, (_, i) => ({
+                        id: `q_${i}`,
+                        timestamp: new Date().toISOString(),
+                        correct: Math.random() > 0.5,
+                        timeTaken: Math.random() * 60000
+                    }))
+                };
+
+                const startTime = performance.now();
+                localStorage.setItem('test_large_dataset', JSON.stringify(largeData));
+                const writeTime = performance.now() - startTime;
+
+                addResult('integrity-results', `Escritura de 1000 items: ${writeTime.toFixed(2)}ms`, 'info', '⏱️');
+
+                const readStart = performance.now();
+                const retrieved = JSON.parse(localStorage.getItem('test_large_dataset'));
+                const readTime = performance.now() - readStart;
+
+                addResult('integrity-results', `Lectura de 1000 items: ${readTime.toFixed(2)}ms`, 'info', '⏱️');
+
+                if (retrieved.answeredQuestions.length === 1000) {
+                    addResult('integrity-results', 'Dataset grande procesado correctamente', 'success', '✅');
+                } else {
+                    addResult('integrity-results', 'Pérdida de datos en dataset grande', 'error', '❌');
+                }
+
+                localStorage.removeItem('test_large_dataset');
+
+            } catch (error) {
+                addResult('integrity-results', `Error con dataset grande: ${error.message}`, 'error', '❌');
+            }
+        }
+
+        function testCorruptedData() {
+            clearResults('integrity-results');
+            addResult('integrity-results', 'Testing manejo de datos corruptos...', 'info', '🔧');
+
+            // Test 1: JSON inválido
+            try {
+                localStorage.setItem('test_corrupted', '{invalid json}');
+                const data = JSON.parse(localStorage.getItem('test_corrupted'));
+                addResult('integrity-results', 'No detectó JSON inválido (problema)', 'error', '❌');
+            } catch (error) {
+                addResult('integrity-results', 'JSON inválido detectado correctamente', 'success', '✅');
+            }
+
+            // Test 2: Datos faltantes
+            const incompleteData = { version: '1.0.0' }; // Sin user ni progress
+            localStorage.setItem('test_incomplete', JSON.stringify(incompleteData));
+            const retrieved = JSON.parse(localStorage.getItem('test_incomplete'));
+
+            if (!retrieved.user || !retrieved.progress) {
+                addResult('integrity-results', 'Datos incompletos detectados', 'warning', '⚠️');
+            }
+
+            // Test 3: Tipos incorrectos
+            const wrongTypes = {
+                version: '1.0.0',
+                user: { id: 123 }, // Debería ser string
+                progress: { totalPoints: '1500' } // Debería ser number
+            };
+
+            localStorage.setItem('test_wrong_types', JSON.stringify(wrongTypes));
+            const typesData = JSON.parse(localStorage.getItem('test_wrong_types'));
+
+            if (typeof typesData.user.id !== 'string' || typeof typesData.progress.totalPoints !== 'number') {
+                addResult('integrity-results', 'Tipos incorrectos detectados', 'warning', '⚠️');
+            }
+
+            // Limpieza
+            localStorage.removeItem('test_corrupted');
+            localStorage.removeItem('test_incomplete');
+            localStorage.removeItem('test_wrong_types');
+
+            addResult('integrity-results', 'Test de datos corruptos completado', 'success', '🎉');
+        }
+
+        // Test 2: Rendimiento
+        function testWritePerformance() {
+            clearResults('performance-results');
+            addResult('performance-results', 'Testing rendimiento de escritura...', 'info', '⚡');
+
+            const iterations = 100;
+            const testData = { id: 'test', data: 'x'.repeat(1000) }; // 1KB aprox
+
+            const startTime = performance.now();
+            for (let i = 0; i < iterations; i++) {
+                localStorage.setItem(`perf_test_${i}`, JSON.stringify(testData));
+            }
+            const endTime = performance.now();
+
+            const totalTime = endTime - startTime;
+            const avgTime = totalTime / iterations;
+
+            addResult('performance-results', `${iterations} escrituras en ${totalTime.toFixed(2)}ms`, 'info', '📝');
+            addResult('performance-results', `Promedio por escritura: ${avgTime.toFixed(3)}ms`, 'info', '⏱️');
+
+            if (avgTime < 1) {
+                addResult('performance-results', 'Rendimiento de escritura: Excelente', 'success', '🚀');
+            } else if (avgTime < 5) {
+                addResult('performance-results', 'Rendimiento de escritura: Bueno', 'success', '✅');
+            } else {
+                addResult('performance-results', 'Rendimiento de escritura: Lento', 'warning', '⚠️');
+            }
+
+            // Limpieza
+            for (let i = 0; i < iterations; i++) {
+                localStorage.removeItem(`perf_test_${i}`);
+            }
+        }
+
+        function testReadPerformance() {
+            clearResults('performance-results');
+            addResult('performance-results', 'Testing rendimiento de lectura...', 'info', '📖');
+
+            const iterations = 100;
+            const testData = { id: 'test', data: 'x'.repeat(1000) };
+
+            // Preparar datos
+            for (let i = 0; i < iterations; i++) {
+                localStorage.setItem(`perf_test_${i}`, JSON.stringify(testData));
+            }
+
+            const startTime = performance.now();
+            for (let i = 0; i < iterations; i++) {
+                const data = JSON.parse(localStorage.getItem(`perf_test_${i}`));
+            }
+            const endTime = performance.now();
+
+            const totalTime = endTime - startTime;
+            const avgTime = totalTime / iterations;
+
+            addResult('performance-results', `${iterations} lecturas en ${totalTime.toFixed(2)}ms`, 'info', '📖');
+            addResult('performance-results', `Promedio por lectura: ${avgTime.toFixed(3)}ms`, 'info', '⏱️');
+
+            if (avgTime < 1) {
+                addResult('performance-results', 'Rendimiento de lectura: Excelente', 'success', '🚀');
+            } else if (avgTime < 3) {
+                addResult('performance-results', 'Rendimiento de lectura: Bueno', 'success', '✅');
+            } else {
+                addResult('performance-results', 'Rendimiento de lectura: Lento', 'warning', '⚠️');
+            }
+
+            // Limpieza
+            for (let i = 0; i < iterations; i++) {
+                localStorage.removeItem(`perf_test_${i}`);
+            }
+        }
+
+        function testJSONPerformance() {
+            clearResults('performance-results');
+            addResult('performance-results', 'Testing rendimiento de JSON...', 'info', '🔄');
+
+            const complexData = {
+                version: '1.0.0',
+                user: { id: 'test_user', name: 'Test' },
+                progress: {
+                    answeredQuestions: Array.from({length: 100}, (_, i) => ({
+                        id: `q_${i}`,
+                        timestamp: new Date().toISOString(),
+                        correct: true
+                    })),
+                    domainStats: {},
+                    achievements: Array.from({length: 20}, (_, i) => `achievement_${i}`)
+                }
+            };
+
+            // Test stringify
+            const stringifyStart = performance.now();
+            for (let i = 0; i < 1000; i++) {
+                JSON.stringify(complexData);
+            }
+            const stringifyTime = performance.now() - stringifyStart;
+
+            addResult('performance-results', `1000 stringify: ${stringifyTime.toFixed(2)}ms`, 'info', '📤');
+
+            // Test parse
+            const jsonString = JSON.stringify(complexData);
+            const parseStart = performance.now();
+            for (let i = 0; i < 1000; i++) {
+                JSON.parse(jsonString);
+            }
+            const parseTime = performance.now() - parseStart;
+
+            addResult('performance-results', `1000 parse: ${parseTime.toFixed(2)}ms`, 'info', '📥');
+
+            const totalTime = stringifyTime + parseTime;
+            if (totalTime < 100) {
+                addResult('performance-results', 'Rendimiento JSON: Excelente', 'success', '🚀');
+            } else if (totalTime < 300) {
+                addResult('performance-results', 'Rendimiento JSON: Bueno', 'success', '✅');
+            } else {
+                addResult('performance-results', 'Rendimiento JSON: Lento', 'warning', '⚠️');
+            }
+        }
+
+        // Test 3: Capacidad
+        function testStorageCapacity() {
+            clearResults('capacity-results');
+            addResult('capacity-results', 'Midiendo capacidad de almacenamiento...', 'info', '📏');
+
+            const currentSize = getStorageSize();
+            addResult('capacity-results', `Uso actual: ${formatBytes(currentSize)}`, 'info', '💾');
+
+            // Estimar capacidad libre
+            try {
+                const testKey = 'capacity_test';
+                const chunkSize = 1024 * 100; // 100KB
+                let testData = '';
+                let stored = 0;
+
+                while (stored < 5 * 1024 * 1024) { // Máximo 5MB de prueba
+                    testData += 'x'.repeat(chunkSize);
+                    try {
+                        localStorage.setItem(testKey, testData);
+                        stored += chunkSize * 2; // UTF-16
+                    } catch (e) {
+                        break;
+                    }
+                }
+
+                localStorage.removeItem(testKey);
+
+                addResult('capacity-results', `Capacidad probada: ${formatBytes(stored)}`, 'success', '✅');
+                addResult('capacity-results', `Espacio disponible estimado: ${formatBytes(stored - currentSize)}`, 'info', '📊');
+
+            } catch (error) {
+                addResult('capacity-results', `Error: ${error.message}`, 'error', '❌');
+            }
+        }
+
+        function testStorageLimit() {
+            clearResults('capacity-results');
+            addResult('capacity-results', 'Testing límite de almacenamiento...', 'info', '🚨');
+
+            try {
+                const largeData = 'x'.repeat(1024 * 1024 * 10); // 10MB
+                localStorage.setItem('limit_test', largeData);
+                addResult('capacity-results', 'Almacenado 10MB exitosamente', 'success', '✅');
+                localStorage.removeItem('limit_test');
+            } catch (error) {
+                if (error.name === 'QuotaExceededError') {
+                    addResult('capacity-results', 'Límite de cuota alcanzado (esperado)', 'warning', '⚠️');
+                } else {
+                    addResult('capacity-results', `Error: ${error.message}`, 'error', '❌');
+                }
+            }
+        }
+
+        function clearAllStorage() {
+            if (confirm('¿Estás seguro de que quieres limpiar todo el localStorage?')) {
+                localStorage.clear();
+                clearResults('capacity-results');
+                addResult('capacity-results', 'localStorage limpiado completamente', 'success', '🗑️');
+                updateStats();
+            }
+        }
+
+        // Test 4: Auto-save y Deduplicación
+        function testAutosaveThrottle() {
+            clearResults('autosave-results');
+            addResult('autosave-results', 'Testing throttling de auto-save...', 'info', '⏳');
+
+            let saveCount = 0;
+            const saves = [];
+
+            // Simular múltiples guardados rápidos
+            for (let i = 0; i < 10; i++) {
+                const timestamp = Date.now();
+                saves.push({ index: i, timestamp });
+                saveCount++;
+            }
+
+            // Verificar si hay guardados muy cercanos (< 500ms)
+            let rapidSaves = 0;
+            for (let i = 1; i < saves.length; i++) {
+                if (saves[i].timestamp - saves[i-1].timestamp < 500) {
+                    rapidSaves++;
+                }
+            }
+
+            addResult('autosave-results', `Total de saves: ${saveCount}`, 'info', '📝');
+            addResult('autosave-results', `Saves rápidos (< 500ms): ${rapidSaves}`, 'info', '⚡');
+
+            if (rapidSaves > 5) {
+                addResult('autosave-results', 'ADVERTENCIA: Muchos guardados rápidos detectados', 'warning', '⚠️');
+                addResult('autosave-results', 'Recomendación: Implementar throttling más agresivo', 'warning', '💡');
+            } else {
+                addResult('autosave-results', 'Throttling funcionando correctamente', 'success', '✅');
+            }
+        }
+
+        function testDeduplication() {
+            clearResults('autosave-results');
+            addResult('autosave-results', 'Testing deduplicación...', 'info', '🔍');
+
+            const data1 = { totalPoints: 1000, answeredQuestions: ['q1', 'q2'] };
+            const data2 = { totalPoints: 1000, answeredQuestions: ['q1', 'q2'] };
+            const data3 = { totalPoints: 1500, answeredQuestions: ['q1', 'q2', 'q3'] };
+
+            // Simular hash function
+            const hash = (data) => {
+                const str = JSON.stringify({
+                    totalPoints: data.totalPoints,
+                    questionCount: data.answeredQuestions.length
+                });
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+                return hash.toString(36);
+            };
+
+            const hash1 = hash(data1);
+            const hash2 = hash(data2);
+            const hash3 = hash(data3);
+
+            addResult('autosave-results', `Hash data1: ${hash1}`, 'info', '#️⃣');
+            addResult('autosave-results', `Hash data2: ${hash2}`, 'info', '#️⃣');
+            addResult('autosave-results', `Hash data3: ${hash3}`, 'info', '#️⃣');
+
+            if (hash1 === hash2) {
+                addResult('autosave-results', 'Datos idénticos detectados correctamente', 'success', '✅');
+            } else {
+                addResult('autosave-results', 'Fallo en detección de duplicados', 'error', '❌');
+            }
+
+            if (hash1 !== hash3) {
+                addResult('autosave-results', 'Datos diferentes distinguidos correctamente', 'success', '✅');
+            } else {
+                addResult('autosave-results', 'Error: Datos diferentes tienen mismo hash', 'error', '❌');
+            }
+        }
+
+        function testConcurrentWrites() {
+            clearResults('autosave-results');
+            addResult('autosave-results', 'Testing escrituras concurrentes...', 'info', '🔀');
+
+            const promises = [];
+            const startTime = performance.now();
+
+            // Simular 10 escrituras concurrentes
+            for (let i = 0; i < 10; i++) {
+                promises.push(
+                    new Promise((resolve) => {
+                        setTimeout(() => {
+                            localStorage.setItem(`concurrent_${i}`, JSON.stringify({ index: i, timestamp: Date.now() }));
+                            resolve(i);
+                        }, Math.random() * 100);
+                    })
+                );
+            }
+
+            Promise.all(promises).then(() => {
+                const endTime = performance.now();
+                addResult('autosave-results', `10 escrituras concurrentes en ${(endTime - startTime).toFixed(2)}ms`, 'info', '⏱️');
+
+                // Verificar que todas se guardaron
+                let successCount = 0;
+                for (let i = 0; i < 10; i++) {
+                    if (localStorage.getItem(`concurrent_${i}`)) {
+                        successCount++;
+                        localStorage.removeItem(`concurrent_${i}`);
+                    }
+                }
+
+                if (successCount === 10) {
+                    addResult('autosave-results', 'Todas las escrituras concurrentes exitosas', 'success', '✅');
+                } else {
+                    addResult('autosave-results', `Solo ${successCount}/10 escrituras exitosas`, 'error', '❌');
+                }
+            });
+        }
+
+        // Test 5: IndexedDB
+        function testIndexedDBAvailability() {
+            clearResults('indexeddb-results');
+            addResult('indexeddb-results', 'Verificando IndexedDB...', 'info', '🔍');
+
+            if (!window.indexedDB) {
+                addResult('indexeddb-results', 'IndexedDB no está disponible', 'error', '❌');
+                return;
+            }
+
+            addResult('indexeddb-results', 'IndexedDB está disponible', 'success', '✅');
+
+            // Intentar abrir una base de datos de prueba
+            const request = indexedDB.open('test_db', 1);
+
+            request.onerror = () => {
+                addResult('indexeddb-results', 'Error al abrir IndexedDB', 'error', '❌');
+            };
+
+            request.onsuccess = (event) => {
+                const db = event.target.result;
+                addResult('indexeddb-results', `Base de datos abierta: ${db.name} v${db.version}`, 'success', '✅');
+                db.close();
+                indexedDB.deleteDatabase('test_db');
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('test_store')) {
+                    db.createObjectStore('test_store', { keyPath: 'id' });
+                    addResult('indexeddb-results', 'Object store creado exitosamente', 'success', '✅');
+                }
+            };
+        }
+
+        function testIndexedDBOperations() {
+            clearResults('indexeddb-results');
+            addResult('indexeddb-results', 'Testing operaciones de IndexedDB...', 'info', '🔧');
+
+            const request = indexedDB.open('test_operations_db', 1);
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('data')) {
+                    db.createObjectStore('data', { keyPath: 'id' });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                const db = event.target.result;
+                const transaction = db.transaction(['data'], 'readwrite');
+                const store = transaction.objectStore('data');
+
+                // Test write
+                const testData = { id: 1, value: 'test', timestamp: Date.now() };
+                const writeStart = performance.now();
+                const addRequest = store.add(testData);
+
+                addRequest.onsuccess = () => {
+                    const writeTime = performance.now() - writeStart;
+                    addResult('indexeddb-results', `Escritura: ${writeTime.toFixed(2)}ms`, 'info', '✍️');
+
+                    // Test read
+                    const readStart = performance.now();
+                    const getRequest = store.get(1);
+
+                    getRequest.onsuccess = (e) => {
+                        const readTime = performance.now() - readStart;
+                        addResult('indexeddb-results', `Lectura: ${readTime.toFixed(2)}ms`, 'info', '📖');
+
+                        if (e.target.result && e.target.result.value === 'test') {
+                            addResult('indexeddb-results', 'Operaciones de IndexedDB exitosas', 'success', '✅');
+                        }
+
+                        db.close();
+                        indexedDB.deleteDatabase('test_operations_db');
+                    };
+                };
+
+                addRequest.onerror = () => {
+                    addResult('indexeddb-results', 'Error en operación de escritura', 'error', '❌');
+                    db.close();
+                    indexedDB.deleteDatabase('test_operations_db');
+                };
+            };
+        }
+
+        function testIndexedDBMigration() {
+            clearResults('indexeddb-results');
+            addResult('indexeddb-results', 'Testing migración de datos...', 'info', '🔄');
+
+            // Simular datos antiguos en localStorage
+            const oldData = {
+                version: '1.0.0',
+                user: { id: 'user_123', name: 'Test' },
+                progress: { totalPoints: 1000 }
+            };
+
+            localStorage.setItem('pl300_old_format', JSON.stringify(oldData));
+
+            // Migrar a IndexedDB
+            const request = indexedDB.open('migration_test_db', 1);
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('progress')) {
+                    db.createObjectStore('progress', { keyPath: 'userId' });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                const db = event.target.result;
+                const transaction = db.transaction(['progress'], 'readwrite');
+                const store = transaction.objectStore('progress');
+
+                const migratedData = {
+                    userId: oldData.user.id,
+                    ...oldData
+                };
+
+                const addRequest = store.add(migratedData);
+
+                addRequest.onsuccess = () => {
+                    addResult('indexeddb-results', 'Datos migrados a IndexedDB', 'success', '✅');
+
+                    // Verificar migración
+                    const getRequest = store.get('user_123');
+                    getRequest.onsuccess = (e) => {
+                        if (e.target.result && e.target.result.progress.totalPoints === 1000) {
+                            addResult('indexeddb-results', 'Migración verificada correctamente', 'success', '✅');
+                        }
+
+                        db.close();
+                        indexedDB.deleteDatabase('migration_test_db');
+                        localStorage.removeItem('pl300_old_format');
+                    };
+                };
+
+                addRequest.onerror = () => {
+                    addResult('indexeddb-results', 'Error en migración', 'error', '❌');
+                    db.close();
+                    indexedDB.deleteDatabase('migration_test_db');
+                };
+            };
+        }
+
+        // Inicializar estadísticas
+        updateStats();
+    </script>
+</body>
+</html>
